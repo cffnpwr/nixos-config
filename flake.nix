@@ -8,7 +8,7 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    personal = { url = "git+file:/home/cffnpwr/git/nix-channel"; };
+    personal = { url = "github:cffnpwr/nixpkgs"; };
   };
 
   outputs = { self, nixpkgs, home-manager, personal, ... } @ attrs: {
