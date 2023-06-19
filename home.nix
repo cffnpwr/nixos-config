@@ -82,6 +82,32 @@ in
       ll = "ls -al";
       la = "ls -a";
       update = "sudo nixos-rebuild switch";
+
+      # docker
+      d = "docker";
+      di = "docker images";
+      dps = "docker ps";
+      dc = "docker compose";
+      dce = "docker compose exec";
+      dcl = "docker compose logs";
+      dcu = "docker compose up";
+      dcd = "docker compose down";
+
+      # k8s
+      k = "kubectl";
+      kg = "kubectl get";
+      kgp = "kubectl get pods";
+      kgs = "kubectl get services";
+      kgn = "kubectl get nodes";
+      kga = "kubectl get all";
+      kd = "kubectl describe";
+      kdp = "kubectl describe pods";
+      kds = "kubectl describe services";
+      kdn = "kubectl describe nodes";
+      krm = "kubectl delete";
+      krmp = "kubectl delete pods";
+      krms = "kubectl delete services";
+
     };
 
     envExtra = ''
