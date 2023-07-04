@@ -17,7 +17,7 @@ in
   home.homeDirectory = "/home/cffnpwr";
   home.stateVersion = "23.05";
 
-  home.packages = with pkgs; with personal; [
+  home.packages = with pkgs; [
     rnix-lsp
     nixpkgs-fmt
     ciscoPacketTracer8
@@ -38,12 +38,13 @@ in
     gnomeExtensions.tailscale-status
     gnomeExtensions.vitals
     gnomeExtensions.applications-menu
-    fusuma
+    personal.fusuma
     neofetch
     zplug
     bibata-cursors
-    koruri
-    _0xproto
+    personal.koruri
+    personal._0xproto
+    texlive.combined.scheme-full
   ];
 
   services.fusuma = {
@@ -115,13 +116,16 @@ in
     '';
 
     initExtra = ''
-      zstyle ':completion:*' list-colors "\$\{LS_COLORS\}"
-      zstyle ':completion:*' menu select=1
+      zstyle ":completion:*" list-colors "\$\{LS_COLORS\}"
+      zstyle ":completion:*" menu select=1
 
       if zplug check zsh-users/zsh-history-substring-search; then
-        bindkey '^[OA' history-substring-search-up
-        bindkey '^[OB' history-substring-search-down
+        bindkey "^[OA" history-substring-search-up
+        bindkey "^[OB" history-substring-search-down
       fi
+
+      bindkey "^[[1;5C" forward-word
+      bindkey "^[[1;5D" backward-word
 
       [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
     '';

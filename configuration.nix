@@ -186,6 +186,7 @@
     enable = true;
     enableSSHSupport = true;
     enableExtraSocket = true;
+    pinentryFlavor = "gnome3";
   };
 
   # List services that you want to enable:
