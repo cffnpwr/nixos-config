@@ -5,12 +5,12 @@
 { config, lib, pkgs, home-manager, ... }:
 
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
-      home-manager.nixosModule
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    /etc/nixos/hardware-configuration.nix
+    home-manager.nixosModule
+    ./cloudflare-warp.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -134,34 +134,6 @@
   systemd.services.NetworkManager-wait-online.enable = false;
 
   services.tailscale.enable = true;
-
-  systemd.services.tailscale-autoconnect = {
-    description = "Automatic connection to Tailscale";
-
-    # make sure tailscale is running before trying to connect to tailscale
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
-
-    # set this service as a oneshot job
-    serviceConfig.Type = "oneshot";
-
-    # have the job run this shell script
-    script = with pkgs; ''
-      # wait for tailscaled to settle
-      sleep 2
-
-      # check if we are already authenticated to tailscale
-      status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-      if [ $status = "Running" ]; then # if so, then do nothing
-        exit 0
-      fi
-
-      # otherwise authenticate with tailscale
-      ${tailscale}/bin/tailscale up -authkey tskey-auth-k6RCHm2CNTRL-fbNvwdZCyT3Uav9A4df1U3LAde9Zdayz
-    '';
-  };
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -189,6 +161,8 @@
     pinentryFlavor = "gnome3";
   };
 
+  services.cloudflare-warp.enable = true;
+
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
@@ -206,6 +180,27 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "unstable"; # Did you read the comment?
+
+  security.pki.certificates = [''
+    -----BEGIN CERTIFICATE-----
+    MIIC6zCCAkygAwIBAgIUI7b68p0pPrCBoW4ptlyvVcPItscwCgYIKoZIzj0EAwQw
+    gY0xCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+    YW4gRnJhbmNpc2NvMRgwFgYDVQQKEw9DbG91ZGZsYXJlLCBJbmMxNzA1BgNVBAMT
+    LkNsb3VkZmxhcmUgZm9yIFRlYW1zIEVDQyBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkw
+    HhcNMjAwMjA0MTYwNTAwWhcNMjUwMjAyMTYwNTAwWjCBjTELMAkGA1UEBhMCVVMx
+    EzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xGDAW
+    BgNVBAoTD0Nsb3VkZmxhcmUsIEluYzE3MDUGA1UEAxMuQ2xvdWRmbGFyZSBmb3Ig
+    VGVhbXMgRUNDIENlcnRpZmljYXRlIEF1dGhvcml0eTCBmzAQBgcqhkjOPQIBBgUr
+    gQQAIwOBhgAEAVdXsX8tpA9NAQeEQalvUIcVaFNDvGsR69ysZxOraRWNGHLfq1mi
+    P6o3wtmtx/C2OXG01Cw7UFJbKl5MEDxnT2KoAdFSynSJOF2NDoe5LoZHbUW+yR3X
+    FDl+MF6JzZ590VLGo6dPBf06UsXbH7PvHH2XKtFt8bBXVNMa5a21RdmpD0Pho0Uw
+    QzAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBAjAdBgNVHQ4EFgQU
+    YBcQng1AEMMNteuRDAMG0/vgFe0wCgYIKoZIzj0EAwQDgYwAMIGIAkIBQU5OTA2h
+    YqmFk8paan5ezHVLcmcucsfYw4L/wmeEjCkczRmCVNm6L86LjhWU0v0wER0e+lHO
+    3efvjbsu8gIGSagCQgEBnyYMP9gwg8l96QnQ1khFA1ljFlnqc2XgJHDSaAJC0gdz
+    +NV3JMeWaD2Rb32jc9r6/a7xY0u0ByqxBQ1OQ0dt7A==
+    -----END CERTIFICATE-----
+  ''];
 
 }
